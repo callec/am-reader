@@ -83,7 +83,6 @@ function handlePages(page) {
 
     var renderTask = page.render(renderContext);
     renderTask.promise.then(function () {
-        document.getElementById('loading-message').style.display = 'none';
         loadingMessageDiv.remove();
 	    containerDiv.appendChild(canvas);
     });
@@ -94,14 +93,19 @@ function handlePages(page) {
     if (totalRenderedPages < visiblePages && currPage <= numPages) {
         thePDF.getPage(currPage).then(handlePages);
     }
+    if (totalRenderedPages >= numPages) {
+        document.getElementById('loading-message').innerHTML =
+            'All pages are rendered!';
+    }
 }
 
 function renderNextPage() {
     if (firstVisiblePage + visiblePages <= numPages) {
         firstVisiblePage++;
-        thePDF.getPage(firstVisiblePage + visiblePages - 1).then(function (page) {
-            handlePages(page);
-        });
+        thePDF.getPage(firstVisiblePage + visiblePages - 1)
+            .then(function (page) {
+                handlePages(page);
+            });
     }
 }
 
@@ -112,7 +116,6 @@ function handleScroll() {
     //var scrollTrigger = 0.25;
 
     if (scrollTop + clientHeight >= scrollHeight) {
-        document.getElementById('loading-message').style.display = 'block';
         renderNextPage();
     }
 }
