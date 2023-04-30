@@ -1,0 +1,37 @@
+{{define "additional-headers"}}
+<script type='application/javascript' src='/js/pdfjs/build/pdf.js'></script>
+<script type='application/javascript' defer src='/js/pdf-viewer.js'></script>
+<script type='application/javascript' defer src='/js/viewer.js'></script>
+<link rel="stylesheet" type="text/css" href="/css/viewer.css">
+{{end}}
+
+{{define "header"}}
+<div id="back" class="button">
+  <p>GO BACK</p>
+</div>
+<div id="info" class="button">
+  <p>INFORMATION</p>
+</div>
+<div id="next" class="button">
+  <p>NEXT MAG</p>
+</div>
+{{end}}
+
+{{define "footer"}}
+<div class="center">
+  VIEWER FOOT
+</div>
+{{end}}
+
+{{define "content"}}
+<!-- note to whoever checks this out, do not do this! -->
+<div id="data-loc" class="data">{{.Magazine.Location}}</div>
+<div class="center">
+  <div id="first-page">
+  </div>
+  <br>
+  <div id="mag-div" class="doc-container">
+  </div>
+  <div id="loading-message" style="display: none;">ADDITIONAL PAGES LOADING...</div>
+</div>
+{{end}}

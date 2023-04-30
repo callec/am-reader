@@ -1,0 +1,23 @@
+{{define "additional-headers"}}
+<link rel="stylesheet" type="text/css" href="/css/library.css">
+{{end}}
+
+{{define "header"}}
+HEAD
+{{end}}
+
+{{define "footer"}}
+FOOT
+{{end}}
+
+{{define "content"}}
+<div class="center">
+    <div class="size">
+        <div class="library">
+            {{range .Results}}
+                {{template "magazine"  .}}
+            {{end}}
+        </div>
+    </div>
+</div>
+{{end}}

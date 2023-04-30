@@ -1,0 +1,150 @@
+body {
+    background: #555555;
+}
+
+#back {
+    background: #ff0000;
+}
+
+#info {
+    background: #00ff00;
+}
+
+#next {
+    background: #0000ff;
+}
+
+menu {
+    background-color: hsl(206, 68%, 96%);
+    width: 50%;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+.header {
+    display: flex;
+    flex-shrink: 1;
+    height: 3rem;
+    padding: 0;
+}
+
+.first-size {
+    margin-bot: 1rem;
+}
+
+@media only screen and (max-width: 600px) {
+    .header {
+        flex-direction: column;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    .header {
+        flex-direction: column;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .header {
+        flex-direction: row;
+    }
+}
+
+.header .button {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.header p {
+    padding: 0;
+    margin: auto;
+}
+
+.doc-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    row-gap: 10px;
+}
+
+.footer {
+    margin-top: auto;
+    flex-shrink: 0;
+    height: 2em;
+    padding: 0.35rem;
+    background-size: contain;
+    background-repeat: repeat-x;
+}
+
+.pdf-viewer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    aspect-ratio: unset;
+    padding: 0;
+    background: #cdcdcd;
+}
+
+.pdf-viewer {
+    margin: 0;
+}
+
+.pdf-viewer:not(:last-child) {
+    margin: 0 0 1rem 0;
+}
+
+@media only screen and (max-width: 600px) {
+    .pdf-viewer {
+        width: 100%;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    .pdf-viewer {
+        width: 100%;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .pdf-viewer {
+        width: auto;
+        height: 100vh;
+    }
+}
+
+.pdf-viewer canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.pdf-viewer.align-left {
+    justify-self: start;
+}
+
+.pdf-viewer.align-right {
+    justify-self: end;
+}
+
+#loading-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    color: white;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+}

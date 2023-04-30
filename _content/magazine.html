@@ -1,0 +1,9 @@
+{{define "magazine"}}
+<div
+    class="magazine-preview"
+    onclick="window.location='/viewer/{{.Id}}';"
+>
+    <p>TITLE, NO. {{.Number}}</p>
+    <img src="{{.Location}}">
+</div>
+{{end}}
