@@ -14,6 +14,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// TODO: It's all spaghetti here.
 func main() {
 	// Initialise database.
 	d, err := sql.Open("sqlite3", "./database/mg.db")
@@ -29,7 +30,7 @@ func main() {
 	queries := db.New(d)
 	s := magazine.NewService(queries)
 
-	ef := func(w http.ResponseWriter, e error) error {
+	errRender := func(w http.ResponseWriter, e error) error {
 		params := html.ErrorPageParams{
 			Title: "ERROR",
 			Err:   e.Error(),
@@ -41,29 +42,23 @@ func main() {
 	http.Handle("/", handler)
 
 	// Spaghetti to avoid dependencies between packages.
-	mrf := func(w http.ResponseWriter, ms []*magazine.Magazine) error {
+	homeRender := func(w http.ResponseWriter, ms []*magazine.Magazine) error {
 		params := html.MainPageParams{
 			Title:   "MAIN PAGE",
 			Results: ms,
 		}
 		return html.MainPage(w, params)
 	}
-	mhf := func(w http.ResponseWriter, r *http.Request, s magazine.Service) {
-		chttp.HomeHandler(w, r, s, mrf, ef)
-	}
-	http.HandleFunc("/main/", chttp.MakeHandler(mhf, s))
+	http.HandleFunc("/main/", chttp.HomeHandler(s, homeRender, errRender))
 
-	vrf := func(w http.ResponseWriter, m *magazine.Magazine) error {
+	viewRender := func(w http.ResponseWriter, m *magazine.Magazine) error {
 		params := html.ViewPageParams{
 			Title:    "VIEWER",
 			Magazine: m,
 		}
 		return html.ViewPage(w, params)
 	}
-	vhf := func(w http.ResponseWriter, r *http.Request, s magazine.Service) {
-		chttp.ViewHandler(w, r, s, vrf, ef)
-	}
-	http.HandleFunc("/viewer/", chttp.MakeHandler(vhf, s))
+	http.HandleFunc("/viewer/", chttp.ViewHandler(s, viewRender, errRender))
 
 	http.HandleFunc("/admin/", func(w http.ResponseWriter, r *http.Request) {
 		params := html.AdminPageParams{
