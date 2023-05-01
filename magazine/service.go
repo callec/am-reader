@@ -8,16 +8,16 @@ import (
 	"github.com/google/uuid"
 )
 
-// Any service for database interaction must implement these functions.
+// Any struct for database interaction must implement these functions.
 type Service interface {
 	// To add a magazine you must supply the number, date of creation,
 	// and the path.
 	AddMagazine(context.Context, int, time.Time, string) error
 
-	// Request a magazine by its id (uuid.UUID).
+	// Request a magazine by it's id (uuid.UUID).
 	GetMagazine(context.Context, uuid.UUID) (*Magazine, error)
 
-	// Request a magazine by its number.
+	// Request a magazine by it's number.
 	GetMagazineByNumber(context.Context, int) (*Magazine, error)
 
 	// Get n magazines with m offset.
