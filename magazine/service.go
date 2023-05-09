@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// TODO: factor out to internal package
 // Any struct for database interaction must implement these functions.
 type Service interface {
 	// To add a magazine you must supply the number, date of creation,

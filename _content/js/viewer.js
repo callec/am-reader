@@ -1,6 +1,6 @@
 var bbut = document.getElementById("back")
 var ibut = document.getElementById("info")
-var nbut = document.getElementById("next")
+var dbut = document.getElementById("download")
 
 bbut.addEventListener("click", function () {
 	window.history.go(-1);
@@ -12,6 +12,6 @@ ibut.addEventListener("click", function () {
 	return false;
 });
 
-nbut.addEventListener("click", function () {
-	// TODO
+dbut.addEventListener("click", function () {
+    window.open(url, '_blank');
 });
