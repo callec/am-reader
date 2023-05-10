@@ -2,14 +2,14 @@ package html
 
 import (
 	"io"
-	"mag/magazine"
+	"mag"
 )
 
 var mainPage = parse("library.html", "magazine.html")
 
 type MainPageParams struct {
 	Title   string
-	Results []*magazine.Magazine
+	Results []*mag.Magazine
 }
 
 func MainPage(w io.Writer, p MainPageParams) error {

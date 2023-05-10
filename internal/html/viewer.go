@@ -2,14 +2,14 @@ package html
 
 import (
 	"io"
-	"mag/magazine"
+	"mag"
 )
 
 var viewPage = parse("viewer.html")
 
 type ViewPageParams struct {
 	Title    string
-	Magazine *magazine.Magazine
+	Magazine *mag.Magazine
 }
 
 func ViewPage(w io.Writer, p ViewPageParams) error {

@@ -7,8 +7,7 @@ import (
 	"mag/internal/chttp"
 	"mag/internal/html"
 	"mag/internal/nofs"
-	"mag/magazine"
-	"mag/magazine/db"
+	"mag/service"
 	"net/http"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -22,13 +21,14 @@ func main() {
 		fmt.Printf("TODO ERROR")
 		return
 	}
-	err = magazine.InitSQL(d)
+	err = service.InitSQL(d)
 	if err != nil {
 		fmt.Printf(err.Error())
 		return
 	}
-	queries := db.New(d)
-	s := magazine.NewService(queries)
+
+	queries := service.Queries(d)
+	s := service.NewService(queries)
 
 	errRender := func(w http.ResponseWriter, e error) error {
 		params := html.ErrorPageParams{
@@ -42,7 +42,7 @@ func main() {
 	http.Handle("/", handler)
 
 	// Spaghetti to avoid dependencies between packages.
-	homeRender := func(w http.ResponseWriter, ms []*magazine.Magazine) error {
+	homeRender := func(w http.ResponseWriter, ms []*mag.Magazine) error {
 		params := html.MainPageParams{
 			Title:   "MAIN PAGE",
 			Results: ms,
@@ -51,7 +51,7 @@ func main() {
 	}
 	http.HandleFunc("/main/", chttp.HomeHandler(s, homeRender, errRender))
 
-	viewRender := func(w http.ResponseWriter, m *magazine.Magazine) error {
+	viewRender := func(w http.ResponseWriter, m *mag.Magazine) error {
 		params := html.ViewPageParams{
 			Title:    "VIEWER",
 			Magazine: m,

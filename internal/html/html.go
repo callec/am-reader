@@ -5,7 +5,3 @@
 // can be used with the function ViewPage which then parses
 // and executes the html template.
 package html
-
-type Parameters interface {
-	MainPageParams | ViewPageParams
-}
