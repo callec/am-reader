@@ -3,12 +3,14 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"mag"
 	"mag/internal/chttp"
 	"mag/internal/html"
 	"mag/internal/nofs"
 	"mag/service"
 	"net/http"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -30,6 +32,12 @@ func main() {
 	queries := service.Queries(d)
 	s := service.NewService(queries)
 
+	// Middleware.
+	var logger log.Logger
+	logger = *log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	loggingMW := chttp.NewLogger(logger)
+
+	// Handlers.
 	errRender := func(w http.ResponseWriter, e error) error {
 		params := html.ErrorPageParams{
 			Title: "ERROR",
@@ -38,8 +46,10 @@ func main() {
 		return html.ErrorPage(w, params)
 	}
 
+	mux := http.NewServeMux()
+
 	handler := http.FileServer(nofs.NoBrowseFS{Fs: http.FS(mag.Content())})
-	http.Handle("/", handler)
+	mux.Handle("/", handler)
 
 	// Spaghetti to avoid dependencies between packages.
 	homeRender := func(w http.ResponseWriter, ms []*mag.Magazine) error {
@@ -49,7 +59,7 @@ func main() {
 		}
 		return html.MainPage(w, params)
 	}
-	http.HandleFunc("/main/", chttp.HomeHandler(s, homeRender, errRender))
+	mux.HandleFunc("/main/", chttp.HomeHandler(s, homeRender, errRender))
 
 	viewRender := func(w http.ResponseWriter, m *mag.Magazine) error {
 		params := html.ViewPageParams{
@@ -58,9 +68,9 @@ func main() {
 		}
 		return html.ViewPage(w, params)
 	}
-	http.HandleFunc("/viewer/", chttp.ViewHandler(s, viewRender, errRender))
+	mux.HandleFunc("/viewer/", chttp.ViewHandler(s, viewRender, errRender))
 
-	http.HandleFunc("/admin/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/admin/", func(w http.ResponseWriter, r *http.Request) {
 		params := html.AdminPageParams{
 			Title:    "ADMIN",
 			Verified: true,
@@ -68,5 +78,7 @@ func main() {
 		html.AdminPage(w, params)
 	})
 
-	http.ListenAndServe(":8080", nil)
+	wrappedMux := loggingMW(mux)
+
+	log.Fatal(http.ListenAndServe(":8080", wrappedMux))
 }

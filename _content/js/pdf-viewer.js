@@ -109,6 +109,7 @@ function renderNextPage() {
     }
 }
 
+// TODO
 function handleScroll() {
     var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     var scrollHeight = document.documentElement.scrollHeight;

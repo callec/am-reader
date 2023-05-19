@@ -85,13 +85,13 @@ func (b *basicService) ListMagazines(
 		Offset: int64(offset),
 	})
 	if err != nil {
-		return nil, fmt.Errorf("Listmag.Magazines: Error reading from database: %w", err)
+		return nil, fmt.Errorf("ListMagazines: Error reading from database: %w", err)
 	}
 	var nms []*mag.Magazine
 	for _, m := range ms {
 		nm, err := mkMag(&m)
 		if err != nil {
-			return nil, fmt.Errorf("Listmag.Magazines: Error parsing uuid: %w", err)
+			return nil, fmt.Errorf("ListMagazines: Error parsing uuid: %w", err)
 		}
 		nms = append(nms, nm)
 	}
