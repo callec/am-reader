@@ -30,6 +30,24 @@ func (q *Queries) AddMagazine(ctx context.Context, arg AddMagazineParams) (sql.R
 	return q.db.ExecContext(ctx, addMagazine, arg.Number, arg.Date, arg.Location)
 }
 
+const addUName = `-- name: AddUName :execresult
+INSERT INTO unames (
+    uid,
+    uname
+) VALUES (
+    ?, ?
+)
+`
+
+type AddUNameParams struct {
+	Uid   string
+	Uname string
+}
+
+func (q *Queries) AddUName(ctx context.Context, arg AddUNameParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, addUName, arg.Uid, arg.Uname)
+}
+
 const getMagazine = `-- name: GetMagazine :one
 SELECT id, inserted, number, date, location FROM magazines
 WHERE id = ? LIMIT 1
@@ -62,6 +80,35 @@ func (q *Queries) GetMagazineByNumber(ctx context.Context, number int64) (Magazi
 		&i.Number,
 		&i.Date,
 		&i.Location,
+	)
+	return i, err
+}
+
+const getUid = `-- name: GetUid :one
+SELECT uid FROM unames
+WHERE uname = ? LIMIT 1
+`
+
+func (q *Queries) GetUid(ctx context.Context, uname string) (string, error) {
+	row := q.db.QueryRowContext(ctx, getUid, uname)
+	var uid string
+	err := row.Scan(&uid)
+	return uid, err
+}
+
+const getUser = `-- name: GetUser :one
+SELECT id, pwd, created, lastonline FROM users
+WHERE id = ? LIMIT 1
+`
+
+func (q *Queries) GetUser(ctx context.Context, id string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUser, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Pwd,
+		&i.Created,
+		&i.Lastonline,
 	)
 	return i, err
 }
@@ -104,6 +151,21 @@ func (q *Queries) ListMagazines(ctx context.Context, arg ListMagazinesParams) ([
 		return nil, err
 	}
 	return items, nil
+}
+
+const registerUser = `-- name: RegisterUser :one
+INSERT INTO users (
+    pwd
+) VALUES (
+    ?
+) RETURNING id
+`
+
+func (q *Queries) RegisterUser(ctx context.Context, pwd string) (string, error) {
+	row := q.db.QueryRowContext(ctx, registerUser, pwd)
+	var id string
+	err := row.Scan(&id)
+	return id, err
 }
 
 const removeMagazine = `-- name: RemoveMagazine :exec

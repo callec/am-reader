@@ -28,6 +28,12 @@ type Service interface {
 
 	// Delete some magazine from the database.
 	RemoveMagazine(context.Context, uuid.UUID) error
+
+	GetUserByName(context.Context, string) (*mag.User, error)
+
+	GetUser(context.Context, uuid.UUID) (*mag.User, error)
+
+	RegisterUser(context.Context, string, string) error
 }
 
 // Factory for db services.

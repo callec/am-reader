@@ -13,3 +13,15 @@ type Magazine struct {
 	Date     int64
 	Location string
 }
+
+type Uname struct {
+	Uid   string
+	Uname string
+}
+
+type User struct {
+	ID         string
+	Pwd        string
+	Created    int64
+	Lastonline int64
+}

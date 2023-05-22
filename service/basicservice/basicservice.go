@@ -102,6 +102,57 @@ func (b *basicService) RemoveMagazine(ctx context.Context, mid uuid.UUID) error 
 	return b.r.RemoveMagazine(ctx, mid.String())
 }
 
+func mkUser(u *db.User) (*mag.User, error) {
+	uid, err := uuid.Parse(u.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &mag.User{
+		Id:           uid,
+		Username:     "currently unused",
+		PasswordHash: u.Pwd,
+		Created:      time.Unix(u.Created, 0),
+		LastOnline:   time.Unix(u.Lastonline, 0),
+	}, nil
+}
+
+func (b *basicService) GetUser(ctx context.Context, uid uuid.UUID) (*mag.User, error) {
+	u, err := b.r.GetUser(ctx, uid.String())
+	if err != nil {
+		return nil, fmt.Errorf("GetUser: Error reading from database: %w", err)
+	}
+
+	nu, err := mkUser(&u)
+	if err != nil {
+		return nil, fmt.Errorf("GetUser: Error parsing uuid: %w", err)
+	}
+	return nu, nil
+}
+
+func (b *basicService) GetUserByName(ctx context.Context, uname string) (*mag.User, error) {
+	u, err := b.r.GetUid(ctx, uname)
+	if err != nil {
+		return nil, fmt.Errorf("GetUserByName: Error reading from database: %w", err)
+	}
+
+	uid, err := uuid.Parse(u)
+	return b.GetUser(ctx, uid)
+}
+
+func (b *basicService) RegisterUser(ctx context.Context, uname string, pwd string) error {
+	id, err := b.r.RegisterUser(ctx, pwd)
+	if err != nil {
+		return fmt.Errorf("RegisterUser: Error reading from database: %w", err)
+	}
+
+	_, err = b.r.AddUName(ctx, db.AddUNameParams{Uid: id, Uname: uname})
+	if err != nil {
+		return fmt.Errorf("RegisterUser: Error adding nickname: %w", err)
+	}
+
+	return nil
+}
+
 func CreateBasicService(r *db.Queries) *basicService {
 	return &basicService{
 		r: r,

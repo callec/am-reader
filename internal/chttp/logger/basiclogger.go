@@ -1,7 +1,7 @@
 // The code in this file originates from another repository.
 // Licensed under Apache License 2.0.
 // Original source: https://github.com/elithrar/admission-control/blob/v0.6.3/request_logger.go
-package basiclogger
+package logger
 
 import (
 	"log"
@@ -39,7 +39,7 @@ func (rw *responseWriter) WriteHeader(code int) {
 }
 
 // LoggingMiddleware logs the incoming HTTP request & its duration.
-func BasicLogger(logger log.Logger) func(http.Handler) http.Handler {
+func basicLogger(logger log.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			defer func() {

@@ -23,3 +23,26 @@ INSERT INTO magazines (
 -- name: RemoveMagazine :exec
 DELETE FROM magazines
 WHERE id = ?;
+
+-- name: GetUid :one
+SELECT uid FROM unames
+WHERE uname = ? LIMIT 1;
+
+-- name: GetUser :one
+SELECT * FROM users
+WHERE id = ? LIMIT 1;
+
+-- name: RegisterUser :one
+INSERT INTO users (
+    pwd
+) VALUES (
+    ?
+) RETURNING id;
+
+-- name: AddUName :execresult
+INSERT INTO unames (
+    uid,
+    uname
+) VALUES (
+    ?, ?
+);
