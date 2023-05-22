@@ -32,6 +32,9 @@ func main() {
 	queries := service.Queries(d)
 	s := service.NewService(queries)
 
+	// Mux.
+	mux := http.NewServeMux()
+
 	// Middleware.
 	var logger log.Logger
 	logger = *log.New(os.Stdout, "", log.Ldate|log.Ltime)
@@ -45,8 +48,6 @@ func main() {
 		}
 		return html.ErrorPage(w, params)
 	}
-
-	mux := http.NewServeMux()
 
 	handler := http.FileServer(nofs.NoBrowseFS{Fs: http.FS(mag.Content())})
 	mux.Handle("/", handler)
