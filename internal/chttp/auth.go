@@ -1,6 +1,10 @@
 package chttp
 
-import "net/http"
+import (
+	"mag/internal/chttp/auth"
+	"mag/service"
+	"net/http"
+)
 
 type Authoriser interface {
 	RegisterHandler(w http.ResponseWriter, r *http.Request)
@@ -9,6 +13,9 @@ type Authoriser interface {
 	RequireLogin(next http.Handler) http.Handler
 }
 
-func NewAuthoriser() *Authoriser {
-	return nil
+func NewAuthoriser(
+	d service.Service,
+	ef func(http.ResponseWriter, error) error,
+) Authoriser {
+	return auth.NewBasicAuthoriser(d, ef)
 }
