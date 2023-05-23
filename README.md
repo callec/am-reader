@@ -24,6 +24,7 @@ golang, sqlite3, sqlc (if you want to add/edit queries).
 ## TODO
 
 ### Actual TODO
+- Comment
 - Testing so that everything works properly in case of change
 - CSS & js
   - Make site look nice.
