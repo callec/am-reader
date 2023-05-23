@@ -6,6 +6,7 @@ var adminPage = parse("admin.html")
 
 type AdminPageParams struct {
 	Title    string
+	Message  string
 	Verified bool
 }
 

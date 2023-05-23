@@ -45,16 +45,22 @@ func main() {
 	mux := http.NewServeMux()
 
 	// Middleware.
-	var logger log.Logger
-	logger = *log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	logger := *log.New(os.Stdout, "Server: ", log.Ldate|log.Ltime)
 	loggingMW := chttp.NewLogger(logger)
 
 	authMW := chttp.NewAuth(s, errRender)
 
 	// Handlers.
-
-	handler := http.FileServer(nofs.NoBrowseFS{Fs: http.FS(mag.Content())})
+	nfslogger := log.New(os.Stdout, "NoBrowseFS: ", log.Ldate|log.Ltime)
+	nfs := nofs.NoBrowseFS{Fs: http.FS(mag.Content()), Logger: nfslogger}
+	handler := http.FileServer(nfs)
 	mux.Handle("/", handler)
+	mux.Handle("/uploads/",
+		http.StripPrefix("/uploads/",
+			http.FileServer(nofs.NoBrowseFS{
+				Fs:     http.Dir("./uploads"),
+				Logger: nfslogger,
+			})))
 
 	// Spaghetti to avoid dependencies between packages.
 	homeRender := func(w http.ResponseWriter, ms []*mag.Magazine) error {
@@ -75,10 +81,11 @@ func main() {
 	}
 	mux.HandleFunc("/viewer/", chttp.ViewHandler(s, viewRender, errRender))
 
-	adminRender := func(w http.ResponseWriter, verified bool) error {
+	adminRender := func(w http.ResponseWriter, msg string) error {
 		params := html.AdminPageParams{
 			Title:    "ADMIN",
-			Verified: verified,
+			Verified: true,
+			Message:  msg,
 		}
 		return html.AdminPage(w, params)
 	}
@@ -91,12 +98,16 @@ func main() {
 	mux.HandleFunc("/login/", chttp.LoginHandler(s, loginRender, errRender))
 	mux.HandleFunc("/login_process/", chttp.LoginProcessHandler(s, errRender))
 
-	regRender := func(w http.ResponseWriter) error {
-		params := html.RegPageParams{Title: "REGISTRATION"}
-		return html.RegPage(w, params)
-	}
-	mux.HandleFunc("/register/", chttp.RegisterHandler(s, regRender, errRender))
-	mux.HandleFunc("/register_process/", chttp.RegisterProcessHandler(s, errRender))
+	// IMPORTANT: Registration of new users should _only_ be performed by an admin.
+	// regRender := func(w http.ResponseWriter) error {
+	// 	params := html.RegPageParams{Title: "REGISTRATION"}
+	// 	return html.RegPage(w, params)
+	// }
+	// mux.HandleFunc("/register/", chttp.RegisterHandler(s, regRender, errRender))
+
+	mux.Handle("/register_process/", authMW(chttp.RegisterProcessHandler(s, errRender)))
+	mux.Handle("/magazine_upload/", authMW(chttp.UploadHandler(s, errRender)))
+	mux.Handle("/magazine_delete/", authMW(chttp.DeleteHandler(s, errRender)))
 
 	// Wrap in logger.
 

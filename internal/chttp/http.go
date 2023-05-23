@@ -8,7 +8,7 @@ import (
 )
 
 var validPath = regexp.MustCompile(
-	"^/($|viewer/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$|main/$|login/$|login_process/$|register/$|register_process/$|admin/$)",
+	`^/($|viewer/[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}|main/$|login/$|login_process/$|register/$|register_process/$|admin/$|magazine_upload/$|magazine_delete/$)`,
 )
 
 // Validate each handler.

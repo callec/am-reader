@@ -3,13 +3,15 @@
 package nofs
 
 import (
+	"log"
 	"net/http"
 )
 
 // From stackoverflow https://stackoverflow.com/a/51170557.
 // Used to block browsing of “public” files.
 type NoBrowseFS struct {
-	Fs http.FileSystem
+	Fs     http.FileSystem
+	Logger *log.Logger
 }
 
 func (n NoBrowseFS) Open(name string) (result http.File, err error) {
@@ -17,11 +19,13 @@ func (n NoBrowseFS) Open(name string) (result http.File, err error) {
 
 	f, err := n.Fs.Open(name)
 	if err != nil {
+		n.Logger.Println("Error opening file: ", err)
 		return
 	}
 
 	fi, err := f.Stat()
 	if err != nil {
+		n.Logger.Println("Error retrieving file info: ", err)
 		return
 	}
 	if fi.IsDir() {

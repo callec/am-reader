@@ -9,7 +9,39 @@
 
 {{define "content"}}
 {{if .Verified}}
-<h1>USER VERIFIED</h1>
+<h1>ADMIN PANEL</h1>
+{{if .Message}}
+<h1>Message: {{.Message}}</h1>
+{{end}}
+<h2>UPLOAD</h2>
+<form action="/magazine_upload/" enctype="multipart/form-data" method="post">
+  <label for="number">Magazine No.:</label><br>
+  <input type="text" id="number" name="number"><br>
+  <label for="date">Date published:</label><br>
+  <input type="datetime-local" id="date" name="date"><br>
+  <label for="magazine">Upload magazine pdf:</label><br>
+  <input type="file" id="magazine" name="magazine"><br>
+  <input type="submit" value="Upload">
+</form>
+
+<h2>DELETION</h2>
+Warning, deletion of magazines are <b>permanent</b>.
+<form action="/magazine_delete/" method="post">
+  <label for="mid">Magazine id:</label><br>
+  <input type="text" id="mid" name="mid"><br>
+  <input type="submit" value="Delete">
+</form>
+
+<h2>REGISTER NEW USERS</h2>
+Warning, any new users added are treated as <b>admin</b>.
+So be careful with name and password! Make sure they are good!
+<form action="/register_process/" method="post">
+  <label for="username">Username:</label><br>
+  <input type="text" id="username" name="username"><br>
+  <label for="password">Password:</label><br>
+  <input type="password" id="password" name="password"><br>
+  <input type="submit" value="Register">
+</form>
 {{else}}
 {{end}}
 {{end}}
