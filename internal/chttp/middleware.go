@@ -2,6 +2,7 @@ package chttp
 
 import (
 	"log"
+	"mag/internal/chttp/errormw"
 	"mag/internal/chttp/logger"
 	"mag/service"
 	"net/http"
@@ -13,8 +14,11 @@ func NewLogger(l log.Logger) func(http.Handler) http.Handler {
 
 func NewAuth(
 	d service.Service,
-	ef func(http.ResponseWriter, error) error,
 ) func(http.Handler) http.Handler {
-	a := newAuthoriser(d, ef)
+	a := newAuthoriser(d)
 	return a.RequireLogin
+}
+
+func NewError(ef func(http.ResponseWriter, error) error) func(http.Handler) http.Handler {
+	return errormw.ErrorMiddleware(ef)
 }

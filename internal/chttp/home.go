@@ -9,7 +9,6 @@ import (
 func HomeHandler(
 	s service.Service,
 	renderFun func(http.ResponseWriter, []*mag.Magazine) error,
-	emptyFun func(http.ResponseWriter, error) error,
 ) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		offset := 0
@@ -19,7 +18,7 @@ func HomeHandler(
 		defer cf()
 		ms, err := s.ListMagazines(ctx, limit, offset)
 		if err != nil {
-			emptyFun(w, err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		renderFun(w, ms)

@@ -17,10 +17,9 @@ type Authoriser interface {
 
 func newAuthoriser(
 	d service.Service,
-	ef func(http.ResponseWriter, error) error,
 ) Authoriser {
 	if authoriser == nil {
-		authoriser = auth.NewBasicAuthoriser(d, ef)
+		authoriser = auth.NewBasicAuthoriser(d)
 	}
 	return authoriser
 }

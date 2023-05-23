@@ -48,7 +48,9 @@ func main() {
 	logger := *log.New(os.Stdout, "Server: ", log.Ldate|log.Ltime)
 	loggingMW := chttp.NewLogger(logger)
 
-	authMW := chttp.NewAuth(s, errRender)
+	authMW := chttp.NewAuth(s)
+
+	errorMW := chttp.NewError(errRender)
 
 	// Handlers.
 	nfslogger := log.New(os.Stdout, "NoBrowseFS: ", log.Ldate|log.Ltime)
@@ -70,7 +72,7 @@ func main() {
 		}
 		return html.MainPage(w, params)
 	}
-	mux.HandleFunc("/main/", chttp.HomeHandler(s, homeRender, errRender))
+	mux.HandleFunc("/main/", chttp.HomeHandler(s, homeRender))
 
 	viewRender := func(w http.ResponseWriter, m *mag.Magazine) error {
 		params := html.ViewPageParams{
@@ -79,7 +81,7 @@ func main() {
 		}
 		return html.ViewPage(w, params)
 	}
-	mux.HandleFunc("/viewer/", chttp.ViewHandler(s, viewRender, errRender))
+	mux.HandleFunc("/viewer/", chttp.ViewHandler(s, viewRender))
 
 	adminRender := func(w http.ResponseWriter, msg string) error {
 		params := html.AdminPageParams{
@@ -89,14 +91,14 @@ func main() {
 		}
 		return html.AdminPage(w, params)
 	}
-	mux.Handle("/admin/", authMW(chttp.AdminHandler(s, adminRender, errRender)))
+	mux.Handle("/admin/", authMW(chttp.AdminHandler(s, adminRender)))
 
 	loginRender := func(w http.ResponseWriter) error {
 		params := html.LoginPageParams{Title: "LOGIN"}
 		return html.LoginPage(w, params)
 	}
-	mux.HandleFunc("/login/", chttp.LoginHandler(s, loginRender, errRender))
-	mux.HandleFunc("/login_process/", chttp.LoginProcessHandler(s, errRender))
+	mux.HandleFunc("/login/", chttp.LoginHandler(s, loginRender))
+	mux.HandleFunc("/login_process/", chttp.LoginProcessHandler(s))
 
 	// IMPORTANT: Registration of new users should _only_ be performed by an admin.
 	// regRender := func(w http.ResponseWriter) error {
@@ -105,13 +107,12 @@ func main() {
 	// }
 	// mux.HandleFunc("/register/", chttp.RegisterHandler(s, regRender, errRender))
 
-	mux.Handle("/register_process/", authMW(chttp.RegisterProcessHandler(s, errRender)))
-	mux.Handle("/magazine_upload/", authMW(chttp.UploadHandler(s, errRender)))
-	mux.Handle("/magazine_delete/", authMW(chttp.DeleteHandler(s, errRender)))
+	mux.Handle("/register_process/", authMW(chttp.RegisterProcessHandler(s)))
+	mux.Handle("/magazine_upload/", authMW(chttp.UploadHandler(s)))
+	mux.Handle("/magazine_delete/", authMW(chttp.DeleteHandler(s)))
 
-	// Wrap in logger.
-
-	wrappedMux := loggingMW(mux)
+	// Wrap in middleware.
+	wrappedMux := loggingMW(errorMW(mux))
 
 	log.Fatal(http.ListenAndServe(":8080", wrappedMux))
 }

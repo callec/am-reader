@@ -11,17 +11,14 @@ import (
 
 type basicAuthoriser struct {
 	d            service.Service
-	emptyFun     func(http.ResponseWriter, error) error
 	sessionStore SessionStore
 }
 
 func NewBasicAuthoriser(
 	d service.Service,
-	ef func(http.ResponseWriter, error) error,
 ) *basicAuthoriser {
 	return &basicAuthoriser{
 		d:            d,
-		emptyFun:     ef,
 		sessionStore: *newSessionStore(),
 	}
 }
@@ -37,7 +34,7 @@ func (b *basicAuthoriser) RegisterHandler(w http.ResponseWriter, r *http.Request
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		b.emptyFun(w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -45,7 +42,7 @@ func (b *basicAuthoriser) RegisterHandler(w http.ResponseWriter, r *http.Request
 	defer cf()
 	err = b.d.RegisterUser(ctx, username, string(hashedPassword))
 	if err != nil {
-		b.emptyFun(w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	http.Redirect(w, r, "/login/", http.StatusOK)
@@ -66,14 +63,14 @@ func (b *basicAuthoriser) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := b.d.GetUserByName(ctx, username)
 	if err != nil {
 		log.Printf("LoginHandler: Login unsuccessful: %s", err.Error())
-		b.emptyFun(w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
 		log.Printf("LoginHandler: Authentication error: %s", err.Error())
-		b.emptyFun(w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -83,7 +80,7 @@ func (b *basicAuthoriser) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	err = b.sessionStore.Store(sessionID, username)
 	if err != nil {
 		log.Printf("LoginHandler: Error storing session: %s", err.Error())
-		b.emptyFun(w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

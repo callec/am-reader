@@ -24,7 +24,6 @@ var (
 func AdminHandler(
 	s service.Service,
 	renderFun func(http.ResponseWriter, string) error,
-	emptyFun func(http.ResponseWriter, error) error,
 ) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		message := ""
@@ -100,7 +99,6 @@ func createFile(fname string, upload multipart.File) (string, error) {
 
 func UploadHandler(
 	s service.Service,
-	emptyFun func(http.ResponseWriter, error) error,
 ) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		var message, fname, handler string
@@ -152,7 +150,7 @@ func UploadHandler(
 
 		err = s.AddMagazine(ctx, i, t, fname)
 		if err != nil {
-			emptyFun(w, err)
+			message = err.Error()
 			goto redirect
 		}
 		message = "Upload successful."
@@ -189,7 +187,6 @@ func deleteMagazineFromDisk(s service.Service, id uuid.UUID) error {
 
 func DeleteHandler(
 	s service.Service,
-	emptyFun func(http.ResponseWriter, error) error,
 ) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		var message, mid string
