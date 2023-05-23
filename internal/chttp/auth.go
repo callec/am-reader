@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+var authoriser Authoriser = nil
+
 type Authoriser interface {
 	RegisterHandler(w http.ResponseWriter, r *http.Request)
 	LoginHandler(w http.ResponseWriter, r *http.Request)
@@ -13,9 +15,12 @@ type Authoriser interface {
 	RequireLogin(next http.Handler) http.Handler
 }
 
-func NewAuthoriser(
+func newAuthoriser(
 	d service.Service,
 	ef func(http.ResponseWriter, error) error,
 ) Authoriser {
-	return auth.NewBasicAuthoriser(d, ef)
+	if authoriser == nil {
+		authoriser = auth.NewBasicAuthoriser(d, ef)
+	}
+	return authoriser
 }

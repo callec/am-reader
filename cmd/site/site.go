@@ -32,6 +32,15 @@ func main() {
 	queries := service.Queries(d)
 	s := service.NewService(queries)
 
+	// Render error.
+	errRender := func(w http.ResponseWriter, e error) error {
+		params := html.ErrorPageParams{
+			Title: "ERROR",
+			Err:   e.Error(),
+		}
+		return html.ErrorPage(w, params)
+	}
+
 	// Mux.
 	mux := http.NewServeMux()
 
@@ -40,14 +49,9 @@ func main() {
 	logger = *log.New(os.Stdout, "", log.Ldate|log.Ltime)
 	loggingMW := chttp.NewLogger(logger)
 
+	authMW := chttp.NewAuth(s, errRender)
+
 	// Handlers.
-	errRender := func(w http.ResponseWriter, e error) error {
-		params := html.ErrorPageParams{
-			Title: "ERROR",
-			Err:   e.Error(),
-		}
-		return html.ErrorPage(w, params)
-	}
 
 	handler := http.FileServer(nofs.NoBrowseFS{Fs: http.FS(mag.Content())})
 	mux.Handle("/", handler)
@@ -71,13 +75,30 @@ func main() {
 	}
 	mux.HandleFunc("/viewer/", chttp.ViewHandler(s, viewRender, errRender))
 
-	mux.HandleFunc("/admin/", func(w http.ResponseWriter, r *http.Request) {
+	adminRender := func(w http.ResponseWriter, verified bool) error {
 		params := html.AdminPageParams{
 			Title:    "ADMIN",
-			Verified: true,
+			Verified: verified,
 		}
-		html.AdminPage(w, params)
-	})
+		return html.AdminPage(w, params)
+	}
+	mux.Handle("/admin/", authMW(chttp.AdminHandler(s, adminRender, errRender)))
+
+	loginRender := func(w http.ResponseWriter) error {
+		params := html.LoginPageParams{Title: "LOGIN"}
+		return html.LoginPage(w, params)
+	}
+	mux.HandleFunc("/login/", chttp.LoginHandler(s, loginRender, errRender))
+	mux.HandleFunc("/login_process/", chttp.LoginProcessHandler(s, errRender))
+
+	regRender := func(w http.ResponseWriter) error {
+		params := html.RegPageParams{Title: "REGISTRATION"}
+		return html.RegPage(w, params)
+	}
+	mux.HandleFunc("/register/", chttp.RegisterHandler(s, regRender, errRender))
+	mux.HandleFunc("/register_process/", chttp.RegisterProcessHandler(s, errRender))
+
+	// Wrap in logger.
 
 	wrappedMux := loggingMW(mux)
 

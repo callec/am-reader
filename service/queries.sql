@@ -13,11 +13,12 @@ LIMIT ? OFFSET ?;
 
 -- name: AddMagazine :execresult
 INSERT INTO magazines (
+    id,
 	number,
 	date,
 	location
 ) VALUES (
-	?, ?, ?
+	?, ?, ?, ?
 );
 
 -- name: RemoveMagazine :exec
@@ -32,12 +33,13 @@ WHERE uname = ? LIMIT 1;
 SELECT * FROM users
 WHERE id = ? LIMIT 1;
 
--- name: RegisterUser :one
+-- name: RegisterUser :execresult
 INSERT INTO users (
+    id,
     pwd
 ) VALUES (
-    ?
-) RETURNING id;
+    ?, ?
+);
 
 -- name: AddUName :execresult
 INSERT INTO unames (

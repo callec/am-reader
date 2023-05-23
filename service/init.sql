@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS magazines (
-	id TEXT DEFAULT (uuid()) NOT NULL UNIQUE,
+	id TEXT NOT NULL UNIQUE,
 	inserted INTEGER DEFAULT (unixepoch()) NOT NULL,
 	number INT UNIQUE NOT NULL,
 	date INTEGER NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS magazines (
 );
 
 CREATE TABLE IF NOT EXISTS users (
-    id TEXT DEFAULT (uuid()) NOT NULL UNIQUE,
+    id TEXT NOT NULL UNIQUE,
     pwd TEXT NOT NULL,
     created INTEGER DEFAULT (unixepoch()) NOT NULL,
     lastonline INTEGER DEFAULT (unixepoch()) NOT NULL,

@@ -20,7 +20,9 @@ func (b *basicService) AddMagazine(
 	t time.Time,
 	loc string,
 ) error {
+	id := uuid.New().String()
 	param := db.AddMagazineParams{
+		ID:       id,
 		Number:   int64(no),
 		Date:     t.Unix(),
 		Location: loc,
@@ -140,7 +142,14 @@ func (b *basicService) GetUserByName(ctx context.Context, uname string) (*mag.Us
 }
 
 func (b *basicService) RegisterUser(ctx context.Context, uname string, pwd string) error {
-	id, err := b.r.RegisterUser(ctx, pwd)
+	id := uuid.New().String()
+
+	params := db.RegisterUserParams{
+		ID:  id,
+		Pwd: pwd,
+	}
+
+	_, err := b.r.RegisterUser(ctx, params)
 	if err != nil {
 		return fmt.Errorf("RegisterUser: Error reading from database: %w", err)
 	}

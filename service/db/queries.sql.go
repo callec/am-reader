@@ -12,22 +12,29 @@ import (
 
 const addMagazine = `-- name: AddMagazine :execresult
 INSERT INTO magazines (
+    id,
 	number,
 	date,
 	location
 ) VALUES (
-	?, ?, ?
+	?, ?, ?, ?
 )
 `
 
 type AddMagazineParams struct {
+	ID       string
 	Number   int64
 	Date     int64
 	Location string
 }
 
 func (q *Queries) AddMagazine(ctx context.Context, arg AddMagazineParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, addMagazine, arg.Number, arg.Date, arg.Location)
+	return q.db.ExecContext(ctx, addMagazine,
+		arg.ID,
+		arg.Number,
+		arg.Date,
+		arg.Location,
+	)
 }
 
 const addUName = `-- name: AddUName :execresult
@@ -153,19 +160,22 @@ func (q *Queries) ListMagazines(ctx context.Context, arg ListMagazinesParams) ([
 	return items, nil
 }
 
-const registerUser = `-- name: RegisterUser :one
+const registerUser = `-- name: RegisterUser :execresult
 INSERT INTO users (
+    id,
     pwd
 ) VALUES (
-    ?
-) RETURNING id
+    ?, ?
+)
 `
 
-func (q *Queries) RegisterUser(ctx context.Context, pwd string) (string, error) {
-	row := q.db.QueryRowContext(ctx, registerUser, pwd)
-	var id string
-	err := row.Scan(&id)
-	return id, err
+type RegisterUserParams struct {
+	ID  string
+	Pwd string
+}
+
+func (q *Queries) RegisterUser(ctx context.Context, arg RegisterUserParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, registerUser, arg.ID, arg.Pwd)
 }
 
 const removeMagazine = `-- name: RemoveMagazine :exec

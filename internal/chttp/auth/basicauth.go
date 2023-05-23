@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type BasicAuthoriser struct {
+type basicAuthoriser struct {
 	d            service.Service
 	emptyFun     func(http.ResponseWriter, error) error
 	sessionStore SessionStore
@@ -18,15 +18,20 @@ type BasicAuthoriser struct {
 func NewBasicAuthoriser(
 	d service.Service,
 	ef func(http.ResponseWriter, error) error,
-) *BasicAuthoriser {
-	return &BasicAuthoriser{
+) *basicAuthoriser {
+	return &basicAuthoriser{
 		d:            d,
 		emptyFun:     ef,
 		sessionStore: *newSessionStore(),
 	}
 }
 
-func (b *BasicAuthoriser) RegisterHandler(w http.ResponseWriter, r *http.Request) {
+func (b *basicAuthoriser) RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
@@ -38,10 +43,20 @@ func (b *BasicAuthoriser) RegisterHandler(w http.ResponseWriter, r *http.Request
 
 	ctx, cf := getTimedContext(300)
 	defer cf()
-	b.d.RegisterUser(ctx, username, string(hashedPassword))
+	err = b.d.RegisterUser(ctx, username, string(hashedPassword))
+	if err != nil {
+		b.emptyFun(w, err)
+		return
+	}
+	http.Redirect(w, r, "/login/", http.StatusOK)
 }
 
-func (b *BasicAuthoriser) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (b *basicAuthoriser) LoginHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
@@ -74,18 +89,18 @@ func (b *BasicAuthoriser) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Send the session ID to the client in a cookie
 	http.SetCookie(w, &http.Cookie{
-		Name:     "session_id",
+		Name:     "session_token",
 		Value:    sessionID.String(),
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   false,
 		SameSite: http.SameSiteStrictMode,
 	})
 
-	http.Redirect(w, r, "/admin", http.StatusSeeOther)
+	http.Redirect(w, r, "/admin/", http.StatusSeeOther)
 }
 
-func (b *BasicAuthoriser) validateSessionToken(value string) bool {
+func (b *basicAuthoriser) validateSessionToken(value string) bool {
 	uid, err := uuid.Parse(value)
 	if err != nil {
 		log.Printf("validateSessionToken: Illegal uuid: %s", err.Error())
@@ -98,7 +113,7 @@ func (b *BasicAuthoriser) validateSessionToken(value string) bool {
 	return false
 }
 
-func (b *BasicAuthoriser) isUserLoggedIn(r *http.Request) bool {
+func (b *basicAuthoriser) isUserLoggedIn(r *http.Request) bool {
 	sessionTokenCookie, err := r.Cookie("session_token")
 	if err != nil {
 		return false
@@ -107,10 +122,10 @@ func (b *BasicAuthoriser) isUserLoggedIn(r *http.Request) bool {
 	return b.validateSessionToken(sessionTokenCookie.Value)
 }
 
-func (b *BasicAuthoriser) RequireLogin(next http.Handler) http.Handler {
+func (b *basicAuthoriser) RequireLogin(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !b.isUserLoggedIn(r) {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			http.Redirect(w, r, "/login/", http.StatusSeeOther)
 			return
 		}
 
