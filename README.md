@@ -26,17 +26,18 @@ golang, sqlite3, sqlc (if you want to add/edit queries).
 ### Actual TODO
 - Comment
 - Testing so that everything works properly in case of change
-- CSS & js
-  - Make site look nice.
-  - Make buttons work as intended.
-  - Make PDFs render properly.
 - CSP (and other web security stuff)
 - Docker
 - Make sure it runs properly on actual webserver
   - Concurrency?
   - Uptime?
   - Memory leaks?
-
+- CSS & js
+  - Make site look nice.
+  - Make buttons work as intended.
+  - Make PDFs render properly.
+  - Make scrolling work as intended (if it isn't?).
+  - Phones.
 ### Maybe TODO
 - Search
   - Scan PDF files for words and search using sqlite3's `LIKE`.

@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func NewLogger(l log.Logger) func(http.Handler) http.Handler {
+func NewLogger(l *log.Logger) func(http.Handler) http.Handler {
 	return logger.NewLogger(l)
 }
 

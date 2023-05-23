@@ -109,30 +109,42 @@ function renderNextPage() {
     }
 }
 
-// TODO
+function renderNextPages(numPages) {
+    for (var i = 0; i < numPages; i++) {
+        renderNextPage();
+    }
+}
+
+var bufferPercentage = 0.2;
+
 function handleScroll() {
     var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     var scrollHeight = document.documentElement.scrollHeight;
     var clientHeight = document.documentElement.clientHeight;
-    //var scrollTrigger = 0.25;
 
-    if (scrollTop + clientHeight >= scrollHeight) {
-        renderNextPage();
+    var buffer = clientHeight * bufferPercentage;
+    var scrollDistanceFromBottom = scrollHeight - scrollTop - clientHeight;
+
+    if (scrollDistanceFromBottom <= buffer) {
+        renderNextPages(2);
     }
 }
 
 function debounce(func, wait) {
     var timeout;
-    return function () {
-        var context = this,
-            args = arguments;
-        var later = function () {
+
+    return function() {
+        var context = this;
+        var args = arguments;
+
+        var later = function() {
             timeout = null;
             func.apply(context, args);
         };
+
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
 }
 
-window.addEventListener('scroll', debounce(handleScroll, 200));
+window.addEventListener('scroll', debounce(handleScroll, 500));

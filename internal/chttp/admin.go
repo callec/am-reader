@@ -71,7 +71,6 @@ func getUploadedFile(r *http.Request, elem string) (multipart.File, string, erro
 
 func createFile(fname string, upload multipart.File) (string, error) {
 	fext := filepath.Ext(fname)
-	fmt.Println(os.Getwd())
 	newfile, err := os.CreateTemp("uploads/", "upload-*"+fext)
 	if err != nil {
 		return "", err

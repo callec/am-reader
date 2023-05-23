@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"mag"
 	"mag/internal/chttp"
@@ -15,22 +14,35 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// TODO: It's all spaghetti here.
-func main() {
-	// Initialise database.
+var (
+	dbloc = "./database/mg.db"
+)
+
+func initDB(loc string) (service.Service, error) {
 	d, err := sql.Open("sqlite3", "./database/mg.db")
 	if err != nil {
-		fmt.Printf("TODO ERROR")
-		return
+		return nil, err
 	}
 	err = service.InitSQL(d)
 	if err != nil {
-		fmt.Printf(err.Error())
-		return
+		return nil, err
 	}
 
 	queries := service.Queries(d)
-	s := service.NewService(queries)
+	return service.NewService(queries), nil
+}
+
+func newGenericLogger(title string) *log.Logger {
+	return log.New(os.Stdout, title+" ", log.Ldate|log.Ltime)
+}
+
+// TODO: It's all spaghetti here.
+func main() {
+	// Initialise database.
+	s, err := initDB(dbloc)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Render error.
 	errRender := func(w http.ResponseWriter, e error) error {
@@ -45,15 +57,13 @@ func main() {
 	mux := http.NewServeMux()
 
 	// Middleware.
-	logger := *log.New(os.Stdout, "Server: ", log.Ldate|log.Ltime)
+	logger := newGenericLogger("Server")
 	loggingMW := chttp.NewLogger(logger)
-
 	authMW := chttp.NewAuth(s)
-
 	errorMW := chttp.NewError(errRender)
 
 	// Handlers.
-	nfslogger := log.New(os.Stdout, "NoBrowseFS: ", log.Ldate|log.Ltime)
+	nfslogger := newGenericLogger("NoBrowseFS")
 	nfs := nofs.NoBrowseFS{Fs: http.FS(mag.Content()), Logger: nfslogger}
 	handler := http.FileServer(nfs)
 	mux.Handle("/", handler)

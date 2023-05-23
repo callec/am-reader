@@ -6,6 +6,6 @@ import (
 )
 
 // Logger middleware factory.
-func NewLogger(l log.Logger) func(http.Handler) http.Handler {
+func NewLogger(l *log.Logger) func(http.Handler) http.Handler {
 	return basicLogger(l)
 }
