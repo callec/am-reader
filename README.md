@@ -25,14 +25,12 @@ golang, sqlite3, sqlc (if you want to add/edit queries).
 
 ### Actual TODO
 - Uploading and deletion of PDFs
-  - Proper log in system (i.e. hashing, salting, and storage of passwords).
   - Scanning PDFs for unwanted content (can use `nsfwjs` but I think it will be VERY slow for long PDFs).
+- Testing so that everything works properly in case of change
 - CSS & js
   - Make site look nice.
   - Make buttons work as intended.
   - Make PDFs render properly.
-- Middleware
-  - Auth
 - CSP (and other web security stuff)
 - Docker
 - Make sure it runs properly on actual webserver
