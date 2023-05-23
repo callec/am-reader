@@ -55,12 +55,16 @@ func basicLogger(logger log.Logger) func(http.Handler) http.Handler {
 			start := time.Now()
 			wrapped := wrapResponseWriter(w)
 			next.ServeHTTP(wrapped, r)
-			logger.Print(
-				"status: ", wrapped.status,
-				", method: ", r.Method,
-				", path: ", r.URL.EscapedPath(),
-				", duration: ", time.Since(start),
-			)
+
+			// Only log if error.
+			if wrapped.Status() >= 400 {
+				logger.Print(
+					"status: ", wrapped.status,
+					", method: ", r.Method,
+					", path: ", r.URL.EscapedPath(),
+					", duration: ", time.Since(start),
+				)
+			}
 		}
 
 		return http.HandlerFunc(fn)

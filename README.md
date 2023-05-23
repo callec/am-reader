@@ -24,8 +24,6 @@ golang, sqlite3, sqlc (if you want to add/edit queries).
 ## TODO
 
 ### Actual TODO
-- Uploading and deletion of PDFs
-  - Scanning PDFs for unwanted content (can use `nsfwjs` but I think it will be VERY slow for long PDFs).
 - Testing so that everything works properly in case of change
 - CSS & js
   - Make site look nice.
@@ -43,6 +41,7 @@ golang, sqlite3, sqlc (if you want to add/edit queries).
   - Scan PDF files for words and search using sqlite3's `LIKE`.
   - Can use `tesseract` (`gosseract` library?) to scan PDFs.
   - Further perhaps implement some similarity system to score search queries.
+- Scan PDFs before upload
 - Extended library
   - Folders.
   - Custom images.
