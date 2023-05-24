@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"os"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite" //"github.com/mattn/go-sqlite3"
 )
 
 var (
@@ -19,7 +19,7 @@ var (
 )
 
 func initDB(loc string) (service.Service, error) {
-	d, err := sql.Open("sqlite3", "./database/mg.db")
+	d, err := sql.Open("sqlite", "./database/mg.db")
 	if err != nil {
 		return nil, err
 	}

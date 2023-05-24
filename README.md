@@ -24,6 +24,9 @@ golang, sqlite3, sqlc (if you want to add/edit queries).
 ## TODO
 
 ### Actual TODO
+- Rework DB in main.go
+- Refactor html package
+- Server side rendering
 - Comment
 - Testing so that everything works properly in case of change
 - CSP (and other web security stuff)

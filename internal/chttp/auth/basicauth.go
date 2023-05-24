@@ -90,7 +90,7 @@ func (b *basicAuthoriser) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Value:    sessionID.String(),
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   false,
+		Secure:   false, // REMEMBER TO SET true
 		SameSite: http.SameSiteStrictMode,
 	})
 
