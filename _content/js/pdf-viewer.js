@@ -5,7 +5,7 @@ var url = document.getElementById('data-loc').innerHTML;
 
 var pdfjsLib = window['pdfjs-dist/build/pdf'];
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdfjs/build/pdf.worker.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdfjs/src/pdf.worker.js';
 
 var currPage = 1; //Pages are 1-based not 0-based
 var numPages = 0;

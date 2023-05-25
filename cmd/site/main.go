@@ -15,11 +15,11 @@ import (
 )
 
 var (
-	dbloc = "./database/mg.db"
+	dbloc = "/database/mg.db"
 )
 
 func initDB(loc string) (service.Service, error) {
-	d, err := sql.Open("sqlite", "./database/mg.db")
+	d, err := sql.Open("sqlite", dbloc)
 	if err != nil {
 		return nil, err
 	}
@@ -111,13 +111,13 @@ func main() {
 	mux.HandleFunc("/login_process/", chttp.LoginProcessHandler(s))
 
 	// IMPORTANT: Registration of new users should _only_ be performed by an admin.
-	// regRender := func(w http.ResponseWriter) error {
-	// 	params := html.RegPageParams{Title: "REGISTRATION"}
-	// 	return html.RegPage(w, params)
-	// }
-	// mux.HandleFunc("/register/", chttp.RegisterHandler(s, regRender, errRender))
+	regRender := func(w http.ResponseWriter) error {
+		params := html.RegPageParams{Title: "REGISTRATION"}
+		return html.RegPage(w, params)
+	}
+	mux.HandleFunc("/register/", chttp.RegisterHandler(s, regRender))
+	mux.Handle("/register_process/", chttp.RegisterProcessHandler(s)) // TODO authMW
 
-	mux.Handle("/register_process/", authMW(chttp.RegisterProcessHandler(s)))
 	mux.Handle("/magazine_upload/", authMW(chttp.UploadHandler(s)))
 	mux.Handle("/magazine_delete/", authMW(chttp.DeleteHandler(s)))
 

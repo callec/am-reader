@@ -24,6 +24,8 @@ golang, sqlite3, sqlc (if you want to add/edit queries).
 ## TODO
 
 ### Actual TODO
+- Fix docker db with initial user
+- Make files persist between docker instances
 - Rework DB in main.go
 - Refactor html package
 - Server side rendering

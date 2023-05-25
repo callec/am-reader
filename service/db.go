@@ -14,7 +14,7 @@ func Queries(d db.DBTX) *db.Queries {
 // Initialise the database. Note that a database is wrapped using
 // sqlc, and must be accessed using a Service.
 func InitSQL(d *sql.DB) error {
-	instructions, err := ioutil.ReadFile("./service/init.sql")
+	instructions, err := ioutil.ReadFile("/service/init.sql")
 	if err != nil {
 		return err
 	}
