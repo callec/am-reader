@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"mag/service"
+	"mag"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -22,7 +22,7 @@ var (
 )
 
 func AdminHandler(
-	s service.Service,
+	s mag.Service,
 	renderFun func(http.ResponseWriter, string) error,
 ) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, r *http.Request) {
@@ -97,7 +97,7 @@ func createFile(fname string, upload multipart.File) (string, error) {
 }
 
 func UploadHandler(
-	s service.Service,
+	s mag.Service,
 ) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		var message, fname, handler string
@@ -165,7 +165,7 @@ func UploadHandler(
 	return validateHandler(fn)
 }
 
-func deleteMagazineFromDisk(s service.Service, id uuid.UUID) error {
+func deleteMagazineFromDisk(s mag.Service, id uuid.UUID) error {
 	ctx, cf := getTimedContext(300)
 	defer cf()
 
@@ -185,7 +185,7 @@ func deleteMagazineFromDisk(s service.Service, id uuid.UUID) error {
 }
 
 func DeleteHandler(
-	s service.Service,
+	s mag.Service,
 ) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		var message, mid string

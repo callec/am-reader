@@ -4,7 +4,7 @@ package service
 import (
 	"database/sql"
 	"io/ioutil"
-	"mag/service/db"
+	"mag/internal/service/db"
 )
 
 func Queries(d db.DBTX) *db.Queries {

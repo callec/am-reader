@@ -21,7 +21,7 @@ RUN curl -LO https://github.com/mozilla/pdf.js/releases/download/v${PDFJS_VERSIO
 
 RUN go install github.com/kyleconroy/sqlc/cmd/sqlc@v${SQLC_VERSION}
 
-WORKDIR /app/service
+WORKDIR /app/internal/service/
 RUN sqlc generate
 
 WORKDIR /app
@@ -31,7 +31,7 @@ RUN chmod +x /am-reader
 
 FROM scratch
 COPY --from=builder /am-reader /am-reader
-COPY --from=builder /app/service /service
+COPY --from=builder /app/internal/service/init.sql /service/init.sql
 WORKDIR /database
 WORKDIR /uploads
 

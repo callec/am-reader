@@ -1,8 +1,8 @@
 package chttp
 
 import (
+	"mag"
 	"mag/internal/chttp/auth"
-	"mag/service"
 	"net/http"
 )
 
@@ -16,7 +16,7 @@ type Authoriser interface {
 }
 
 func newAuthoriser(
-	d service.Service,
+	d mag.Service,
 ) Authoriser {
 	if authoriser == nil {
 		authoriser = auth.NewBasicAuthoriser(d)

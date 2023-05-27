@@ -1,10 +1,7 @@
-package service
+package mag
 
 import (
 	"context"
-	"mag"
-	"mag/service/basicservice"
-	"mag/service/db"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,25 +15,20 @@ type Service interface {
 	AddMagazine(context.Context, int, time.Time, string) error
 
 	// Request a magazine by it's id (uuid.UUID).
-	GetMagazine(context.Context, uuid.UUID) (*mag.Magazine, error)
+	GetMagazine(context.Context, uuid.UUID) (*Magazine, error)
 
 	// Request a magazine by it's number.
-	GetMagazineByNumber(context.Context, int) (*mag.Magazine, error)
+	GetMagazineByNumber(context.Context, int) (*Magazine, error)
 
 	// Get n magazines with m offset.
-	ListMagazines(context.Context, int, int) ([]*mag.Magazine, error)
+	ListMagazines(context.Context, int, int) ([]*Magazine, error)
 
 	// Delete some magazine from the database.
 	RemoveMagazine(context.Context, uuid.UUID) error
 
-	GetUserByName(context.Context, string) (*mag.User, error)
+	GetUserByName(context.Context, string) (*User, error)
 
-	GetUser(context.Context, uuid.UUID) (*mag.User, error)
+	GetUser(context.Context, uuid.UUID) (*User, error)
 
 	RegisterUser(context.Context, string, string) error
-}
-
-// Factory for db services.
-func NewService(r *db.Queries) Service {
-	return basicservice.CreateBasicService(r)
 }

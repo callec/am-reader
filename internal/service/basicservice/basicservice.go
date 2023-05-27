@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"mag"
-	"mag/service/db"
+	"mag/internal/service/db"
 	"time"
 
 	"github.com/google/uuid"

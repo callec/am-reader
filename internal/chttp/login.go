@@ -1,19 +1,19 @@
 package chttp
 
 import (
-	"mag/service"
+	"mag"
 	"net/http"
 )
 
 func LoginProcessHandler(
-	s service.Service,
+	s mag.Service,
 ) http.HandlerFunc {
 	a := newAuthoriser(s)
 	return validateHandler(a.LoginHandler)
 }
 
 func LoginHandler(
-	s service.Service,
+	s mag.Service,
 	renderFun func(http.ResponseWriter) error,
 ) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, r *http.Request) {
@@ -28,14 +28,14 @@ func LoginHandler(
 }
 
 func RegisterProcessHandler(
-	s service.Service,
+	s mag.Service,
 ) http.HandlerFunc {
 	a := newAuthoriser(s)
 	return validateHandler(a.RegisterHandler)
 }
 
 func RegisterHandler(
-	s service.Service,
+	s mag.Service,
 	renderFun func(http.ResponseWriter) error,
 ) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, r *http.Request) {

@@ -7,7 +7,7 @@ import (
 	"mag/internal/chttp"
 	"mag/internal/html"
 	"mag/internal/nofs"
-	"mag/service"
+	"mag/internal/service"
 	"net/http"
 	"os"
 
@@ -18,7 +18,7 @@ var (
 	dbloc = "/database/mg.db"
 )
 
-func initDB(loc string) (service.Service, error) {
+func initDB(loc string) (mag.Service, error) {
 	d, err := sql.Open("sqlite", dbloc)
 	if err != nil {
 		return nil, err

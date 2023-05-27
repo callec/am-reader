@@ -2,7 +2,7 @@ package auth
 
 import (
 	"log"
-	"mag/service"
+	"mag"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -10,12 +10,12 @@ import (
 )
 
 type basicAuthoriser struct {
-	d            service.Service
+	d            mag.Service
 	sessionStore SessionStore
 }
 
 func NewBasicAuthoriser(
-	d service.Service,
+	d mag.Service,
 ) *basicAuthoriser {
 	return &basicAuthoriser{
 		d:            d,

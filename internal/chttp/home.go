@@ -2,12 +2,11 @@ package chttp
 
 import (
 	"mag"
-	"mag/service"
 	"net/http"
 )
 
 func HomeHandler(
-	s service.Service,
+	s mag.Service,
 	renderFun func(http.ResponseWriter, []*mag.Magazine) error,
 ) http.HandlerFunc {
 	fn := func(w http.ResponseWriter, r *http.Request) {
