@@ -69,10 +69,7 @@ func main() {
 	mux.Handle("/", handler)
 	mux.Handle("/uploads/",
 		http.StripPrefix("/uploads/",
-			http.FileServer(nofs.NoBrowseFS{
-				Fs:     http.Dir("./uploads"),
-				Logger: nfslogger,
-			})))
+			http.FileServer(http.Dir("/uploads"))))
 
 	// Spaghetti to avoid dependencies between packages.
 	homeRender := func(w http.ResponseWriter, ms []*mag.Magazine) error {

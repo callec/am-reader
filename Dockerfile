@@ -12,10 +12,12 @@ RUN go mod download
 
 COPY . ./
 
-RUN apk add --no-cache curl tar git
+RUN apk add --no-cache curl unzip git
 
-RUN curl -L https://github.com/mozilla/pdf.js/archive/refs/tags/v${PDFJS_VERSION}.tar.gz | tar xz && \
-    mv pdf.js-${PDFJS_VERSION}/ /app/_content/js/pdfjs/
+
+RUN curl -LO https://github.com/mozilla/pdf.js/releases/download/v${PDFJS_VERSION}/pdfjs-${PDFJS_VERSION}-dist.zip && \
+    unzip pdfjs-${PDFJS_VERSION}-dist.zip -d ./_content/js/pdfjs/ && \
+    rm pdfjs-${PDFJS_VERSION}-dist.zip
 
 RUN go install github.com/kyleconroy/sqlc/cmd/sqlc@v${SQLC_VERSION}
 
