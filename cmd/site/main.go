@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"mag"
 	"mag/internal/chttp"
@@ -18,20 +17,6 @@ var (
 	dbloc = "/database/mg.db"
 )
 
-func initDB(loc string) (mag.Service, error) {
-	d, err := sql.Open("sqlite", dbloc)
-	if err != nil {
-		return nil, err
-	}
-	err = service.InitSQL(d)
-	if err != nil {
-		return nil, err
-	}
-
-	queries := service.Queries(d)
-	return service.NewService(queries), nil
-}
-
 func newGenericLogger(title string) *log.Logger {
 	return log.New(os.Stdout, title+" ", log.Ldate|log.Ltime)
 }
@@ -39,7 +24,7 @@ func newGenericLogger(title string) *log.Logger {
 // TODO: It's all spaghetti here.
 func main() {
 	// Initialise database.
-	s, err := initDB(dbloc)
+	s, err := service.InitDB(dbloc)
 	if err != nil {
 		log.Fatal(err)
 	}

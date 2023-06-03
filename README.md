@@ -11,28 +11,57 @@ Packages in `internal/` should (preferably) have no dependencies between each ot
 Additional packages and code that are used globally is located in the root directory.
 
 ## Running
+Before running you will have to create a file `internal/service/setup.sql`, which contains basic setup for a user.
+Without this file it will not be possible to access the admin page as registration of new users can only be performed by another user (i.e. an admin).
+
+The server itself only requires docker to be run, and you should run it using the `docker-compose up` command, or `docker-compose up --build` if it needs to be rebuilt.
+
+### `setup.sql` example
+This is an example of how setup.sql might look.
+```sql
+INSERT OR IGNORE
+INTO users (id, pwd)
+VALUES (
+    "cc0ab179-3748-40c2-99e9-c9f29266e6b6",
+    "$2a$10$9T/3wAFMWFmWLfL4nYoedOdgmOEteuv/2sAYASrwRbbQQxmeSu0Iq"
+);
+
+INSERT OR IGNORE
+INTO unames (uid, uname)
+VALUES ("cc0ab179-3748-40c2-99e9-c9f29266e6b6", "cito22");
 ```
-git clone git@github.com:callec/pdf-reader.git
-cd pdf-reader
-go get .
-go run ./...
+
+To find uuid and hash you can, for example, use this golang program.
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
+)
+
+func main() {
+	pwd := "password"
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost)
+	fmt.Println(string(hashedPassword))
+	uid := uuid.New().String()
+	fmt.Println(uid)
+}
 ```
 
 ## Dependencies
-golang, sqlite3, sqlc (if you want to add/edit queries).
+Docker
 
 ## TODO
 
 ### Actual TODO
-- Fix docker db with initial user
-- Make files persist between docker instances
-- Rework DB in main.go
 - Refactor html package
 - Server side rendering
 - Comment
 - Testing so that everything works properly in case of change
 - CSP (and other web security stuff)
-- Docker
 - Make sure it runs properly on actual webserver
   - Concurrency?
   - Uptime?

@@ -3,18 +3,49 @@ package auth
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 )
 
+const sessionExpiration = 60 * time.Minute
+
+type Session struct {
+	uname  string
+	expiry time.Time
+}
+
 type SessionStore struct {
-	store map[uuid.UUID]string
+	store map[uuid.UUID]Session
 	mu    sync.RWMutex
 }
 
 func newSessionStore() *SessionStore {
-	return &SessionStore{
-		store: make(map[uuid.UUID]string),
+	ss := &SessionStore{
+		store: make(map[uuid.UUID]Session),
+	}
+	go ss.startCleanupRoutine()
+	return ss
+}
+
+func (s *SessionStore) startCleanupRoutine() {
+	ticker := time.NewTicker(5 * time.Minute) // cleanup every 5 minutes
+	defer ticker.Stop()
+
+	for range ticker.C {
+		s.cleanup()
+	}
+}
+
+func (s *SessionStore) cleanup() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	now := time.Now()
+	for id, session := range s.store {
+		if now.After(session.expiry) {
+			delete(s.store, id)
+		}
 	}
 }
 
@@ -27,7 +58,8 @@ func (s *SessionStore) Store(id uuid.UUID, username string) error {
 		return fmt.Errorf("session id %v already exists", id)
 	}
 
-	s.store[id] = username
+	expiry := time.Now().Add(sessionExpiration)
+	s.store[id] = Session{username, expiry}
 	return nil
 }
 
@@ -36,8 +68,16 @@ func (s *SessionStore) Get(id uuid.UUID) (string, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	username, ok := s.store[id]
-	return username, ok
+	session, ok := s.store[id]
+	if !ok {
+		return "", false
+	}
+
+	if time.Now().After(session.expiry) {
+		return "", false
+	}
+
+	return session.uname, true
 }
 
 // Delete removes a session by id.
