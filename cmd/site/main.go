@@ -93,12 +93,12 @@ func main() {
 	mux.HandleFunc("/login_process/", chttp.LoginProcessHandler(s))
 
 	// IMPORTANT: Registration of new users should _only_ be performed by an admin.
-	regRender := func(w http.ResponseWriter) error {
-		params := html.RegPageParams{Title: "REGISTRATION"}
-		return html.RegPage(w, params)
-	}
-	mux.HandleFunc("/register/", chttp.RegisterHandler(s, regRender))
-	mux.Handle("/register_process/", chttp.RegisterProcessHandler(s)) // TODO authMW
+	//regRender := func(w http.ResponseWriter) error {
+	//	params := html.RegPageParams{Title: "REGISTRATION"}
+	//	return html.RegPage(w, params)
+	//}
+	//mux.HandleFunc("/register/", chttp.RegisterHandler(s, regRender))
+	mux.Handle("/register_process/", authMW(chttp.RegisterProcessHandler(s))) // TODO authMW
 
 	mux.Handle("/magazine_upload/", authMW(chttp.UploadHandler(s)))
 	mux.Handle("/magazine_delete/", authMW(chttp.DeleteHandler(s)))
