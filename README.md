@@ -28,7 +28,7 @@ VALUES (
 
 INSERT OR IGNORE
 INTO unames (uid, uname)
-VALUES ("cc0ab179-3748-40c2-99e9-c9f29266e6b6", "cito22");
+VALUES ("cc0ab179-3748-40c2-99e9-c9f29266e6b6", "username");
 ```
 
 To find uuid and hash you can, for example, use this golang program.
