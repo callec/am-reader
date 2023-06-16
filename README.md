@@ -31,7 +31,7 @@ INTO unames (uid, uname)
 VALUES ("cc0ab179-3748-40c2-99e9-c9f29266e6b6", "username");
 ```
 
-To find uuid and hash you can, for example, use this golang program.
+To find uuid and hash you can, for example, use [this](https://go.dev/play/p/ZT_VuZVD4cu) go program.
 ```go
 package main
 
@@ -57,8 +57,8 @@ Docker
 ## TODO
 
 ### Actual TODO
-- Refactor html package
-- Server side rendering
+- Refactor html package (what did I mean by this?)
+- Find out if range serve is a safari issue
 - Comment
 - Testing so that everything works properly in case of change
 - CSP (and other web security stuff)

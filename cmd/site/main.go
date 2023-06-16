@@ -52,9 +52,12 @@ func main() {
 	nfs := nofs.NoBrowseFS{Fs: http.FS(mag.Content()), Logger: nfslogger}
 	handler := http.FileServer(nfs)
 	mux.Handle("/", handler)
+
+	ufslogger := newGenericLogger("Uploads")
+	ufs := nofs.NoBrowseFS{Fs: http.Dir("/uploads"), Logger: ufslogger}
 	mux.Handle("/uploads/",
 		http.StripPrefix("/uploads/",
-			http.FileServer(http.Dir("/uploads"))))
+			http.FileServer(ufs)))
 
 	// Spaghetti to avoid dependencies between packages.
 	homeRender := func(w http.ResponseWriter, ms []*mag.Magazine) error {

@@ -45,7 +45,7 @@ func (b *basicAuthoriser) RegisterHandler(w http.ResponseWriter, r *http.Request
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/login/", http.StatusOK)
+	http.Redirect(w, r, "/login/", http.StatusSeeOther)
 }
 
 func (b *basicAuthoriser) LoginHandler(w http.ResponseWriter, r *http.Request) {
