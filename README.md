@@ -55,29 +55,8 @@ func main() {
 Docker
 
 ## TODO
-
-### Actual TODO
-- Refactor html package (what did I mean by this?)
-- Find out if range serve is a safari issue
-- Comment
-- Testing so that everything works properly in case of change
-- CSP (and other web security stuff)
-- Make sure it runs properly on actual webserver
-  - Concurrency?
-  - Uptime?
-  - Memory leaks?
-- CSS & js
-  - Make site look nice.
-  - Make buttons work as intended.
-  - Make PDFs render properly.
-  - Make scrolling work as intended (if it isn't?).
-  - Phones.
-### Maybe TODO
+- Make site look nice
 - Search
-  - Scan PDF files for words and search using sqlite3's `LIKE`.
-  - Can use `tesseract` (`gosseract` library?) to scan PDFs.
-  - Further perhaps implement some similarity system to score search queries.
-- Scan PDFs before upload
 - Extended library
-  - Folders.
-  - Custom images.
+  - Folders
+  - Custom images
